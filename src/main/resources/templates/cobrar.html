@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../img/iconpark.jpg">
+    <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css}" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/estiloCobrar.css}">
+    <title>ParkNeon - Cobro</title>
+</head>
+<body>
+    <div class="container">
+        <div class="tituloNeon">
+            <h1 class="titulo">ParkNeon</h1>
+        </div>
+        <br>
+        <center>
+        <label for="placaParaPagar">Placa abonada: </label>
+        <input type="text" th:value="${placaOriginal}">
+        <form th:action="@{/cobrando/{id}(id=${id})}" method="post" th:object="${vehiculo}">
+            <br>
+            <label for="cantidadPagar">El valor que debe cancelar es: $<input type="text" th:value="${debePagar}"
+                    size="10px" readonly></label><br><br>
+            <label for="pago">Pago: </label>
+            <input type="text" th:field="*{pago}" autocomplete="off">
+            <button class="btnPagar">Pagar</button>
+        </form>
+        </center>
+    </div>
+    <br>
+    <br>
+    <footer>
+        <center>
+        <div class="foot">
+            <h3>ParkNeon - Enterprise</h3>
+        </div>
+    </center>
+    </footer>
+    
+</body>
+</html>

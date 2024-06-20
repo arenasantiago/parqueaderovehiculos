@@ -1,0 +1,50 @@
+body{
+    background-color: black;
+    color: white;
+    font-family: "Roboto Mono", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+.inicio:hover{
+    -webkit-text-stroke: 1px #2823bc;
+    color: white;
+}
+.titulo{
+    -webkit-text-stroke: 1px #2823bc;
+    color: white;
+}
+.titulo:hover{
+    background-color: #2823bc;
+}.btnEliminar{
+    background-color: #2823bc;
+    color: white;
+}
+.btnEliminar:hover{
+    background-color: white;
+    -webkit-text-stroke: 1px #2823bc;
+}
+.btnModificar{
+    background-color: #2823bc;
+    color: white;
+}
+.btnModificar:hover{
+    background-color: white;
+    -webkit-text-stroke: 1px #2823bc;
+}
+.btnCobrar{
+    background-color: #2823bc;
+    color: white;
+}
+.btnCobrar:hover{
+    background-color: white;
+    -webkit-text-stroke: 1px #2823bc;
+}
+.btnCargarLista{
+    background-color: #2823bc;
+    color: white;
+}
+.btnCargarLista:hover{
+    background-color: white;
+    -webkit-text-stroke: 1px #2823bc;
+}
