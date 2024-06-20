@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css}" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="icon" type="image/x-icon" href="../img/iconpark.jpg">
+    <link rel="stylesheet" th:href="@{/css/estilolista.css}">
+    <title>ParkNeon - Lista Vehiculos</title>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+              <a class="navbar-brand inicio" th:href="@{/}">Inicio</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link inicio" th:href="@{/lista}">Lista</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <br>
+        <div class="cajaTitulo">
+            <h1 class="titulo">Lista de vehiculos ingresados</h1>
+        </div>
+        <br>
+        <table class="table">
+            <thead class="table-primary">
+                    <tr>
+                        <th>Tipo de vehiculo</th>
+                        <th>Placa</th>
+                        <th>Hora Entrada</th>
+                        <th>Casco</th>
+                        <th>Lavado</th>
+                        <th>Eliminar</th>
+                        <th>Cobrar</th>
+                        <th>Modificar</th>
+                    </tr>
+                </td>
+            </thead>
+            <tbody>
+                <tr th:each = "vehiculo : ${lista}">
+                    <td>
+                        <p th:text = "${vehiculo.tipoVehiculo}"></p>
+                    </td>
+                    <td>
+                        <p th:text = "${vehiculo.placa}"></p>
+                    </td>
+                    <td>
+                        <p th:text = "${vehiculo.hora}"></p>
+                    </td>
+                    <td>
+                        <p th:if = "${vehiculo.casco == true}">Sí</p>
+                        <p th:if = "${vehiculo.casco == false}">No</p>
+                    </td>
+                    <td>
+                        <p th:if = "${vehiculo.lavado == true}">Sí</p>
+                        <p th:if = "${vehiculo.lavado == false}">No</p>
+                    </td>
+                    <td>
+                        <form th:action="@{/eliminar/{id}(id=${vehiculo.id})}" method="post">
+                            <button class="btnEliminar">Eliminar</button>
+                        </form>
+                        
+                    </td>
+                    <td>
+                        <form th:action="@{/cobrar/{id}(id = ${vehiculo.id})}">
+                            <button class="btnCobrar">Cobrar</button>
+                        </form>
+                        
+                    </td>
+                    <td><form th:action="@{/modificar/{id}(id = ${vehiculo.id})}">
+                        <button class="btnModificar">Modificar</button>
+                    </form></td>
+                </tr>
+            </tbody>
+
+        </table>
+        <br>
+        <br>
+        <center>
+            <div class="resultadoModificar">
+                <h2 th:text = "${resultado}">   </h2>
+                <form th:action="@{/lista}" method="get">
+                    <button class="btnCargarLista">Cargar lista</button>
+                </form>
+            </div>
+        </center>
+        <center>
+            <div class="resultadoCobro">
+                <h2 th:text = "${resultCobro}">
+                </h2>
+            </div>
+        </center>
+        <center>
+            <div class="mensajeServicio">
+                <h2 th:text = "${resultadoServicio}"></h2>
+            </div>
+        </center>
+        </div>
+        <br>
+        <br>
+        <footer class="titulo">
+            <center>
+            <div class="foot">
+                <h3>ParkNeon - Enterprise</h3>
+            </div>
+        </center>
+        </footer>
+</body>
+</html>
