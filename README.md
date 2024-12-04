@@ -26,4 +26,14 @@ Este proyecto es una API para la gestión de servicios de un parqueadero de veh�
 
 
 ## Configura la base de datos
+ Base de datos: `parqueadero`
+ Usuario: `root`
 
+ ## Configuracion del application.properties
+ `spring.jpa.hibernate.ddl-auto=update
+  spring.datasource.url=jdbc:mysql://localhost:3306/parqueadero?seSSL=false&serverTimezone=UTC
+  spring.datasource.username=root
+  spring.datasource.password=
+  spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect`
+ ## Ejecución
+   `mvn spring-boot:run`
