@@ -1,0 +1,260 @@
+:root{
+    --neon: #2823bc;
+    --neon-claro: #4f46e5;
+    --fondo: #050508;
+    --fondo-tarjeta: rgba(17, 17, 26, 0.88);
+    --borde: #26263a;
+    --texto: #ffffff;
+    --texto-suave: #b3b3cc;
+}
+
+*{
+    box-sizing: border-box;
+}
+
+body{
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(rgba(5, 5, 8, 0.92), rgba(5, 5, 8, 0.92)), url('../img/fondo-neon.jpg') center / cover fixed;
+    color: var(--texto);
+    font-family: "Roboto Mono", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.contenido{
+    flex: 1 0 auto;
+    width: 100%;
+}
+
+/* ---------- Navegación ---------- */
+.navbar{
+    background: rgba(5, 5, 8, 0.9);
+    border-bottom: 1px solid var(--borde);
+}
+
+.navbar-brand{
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--texto);
+    -webkit-text-stroke: 1px var(--neon);
+    text-shadow: 0 0 12px var(--neon);
+}
+
+.navbar-brand:hover{
+    color: var(--texto);
+}
+
+.nav-link{
+    color: var(--texto-suave);
+}
+
+.nav-link:hover{
+    color: var(--texto);
+    text-shadow: 0 0 8px var(--neon);
+}
+
+.nav-link.active{
+    color: var(--texto);
+    text-shadow: 0 0 8px var(--neon);
+}
+
+.navbar-toggler{
+    border-color: var(--borde);
+}
+
+/* ---------- Títulos ---------- */
+.titulo-neon{
+    color: var(--texto);
+    -webkit-text-stroke: 1px var(--neon);
+    text-shadow: 0 0 18px var(--neon);
+}
+
+.caja-titulo{
+    text-align: center;
+}
+
+/* ---------- Tarjetas ---------- */
+.tarjeta{
+    background: var(--fondo-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.tarjeta h2{
+    color: var(--texto);
+    text-shadow: 0 0 8px var(--neon);
+}
+
+/* ---------- Botones ---------- */
+.btn-neon{
+    background-color: var(--neon);
+    border: 1px solid var(--neon);
+    color: var(--texto);
+    font-weight: 500;
+}
+
+.btn-neon:hover{
+    background-color: var(--neon-claro);
+    border-color: var(--neon-claro);
+    color: var(--texto);
+    box-shadow: 0 0 14px var(--neon);
+}
+
+.btn-neon:focus{
+    box-shadow: 0 0 0 0.2rem rgba(40, 35, 188, 0.4);
+}
+
+/* ---------- Formularios ---------- */
+.form-label{
+    color: var(--texto-suave);
+}
+
+.form-control-oscuro{
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--borde);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--texto);
+    font-family: "Roboto Mono", monospace;
+}
+
+.form-control-oscuro::placeholder{
+    color: var(--texto-suave);
+}
+
+.form-control-oscuro:focus{
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--neon);
+    box-shadow: 0 0 0 0.2rem rgba(40, 35, 188, 0.25);
+    color: var(--texto);
+}
+
+.form-control-oscuro[readonly]{
+    opacity: 0.7;
+}
+
+.form-check-input:checked{
+    background-color: var(--neon);
+    border-color: var(--neon);
+}
+
+.form-check-input:focus{
+    border-color: var(--neon-claro);
+    box-shadow: 0 0 0 0.2rem rgba(40, 35, 188, 0.25);
+}
+
+/* ---------- Tabla ---------- */
+.table-dark{
+    --bs-table-bg: #101018;
+    --bs-table-color: var(--texto);
+    --bs-table-hover-bg: rgba(79, 70, 229, 0.2);
+    --bs-table-hover-color: var(--texto);
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
+}
+
+.table-dark > :not(caption) > * > *{
+    border-color: var(--borde);
+}
+
+/* ---------- Alertas ---------- */
+.alert{
+    border-radius: 0.75rem;
+}
+
+/* ---------- Footer ---------- */
+.footer{
+    margin-top: auto;
+    text-align: center;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--borde);
+    color: var(--texto-suave);
+    background: rgba(5, 5, 8, 0.9);
+}
+
+/* ---------- Logo ---------- */
+.logo-nav{
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 0.5rem;
+    box-shadow: 0 0 10px var(--neon);
+}
+
+.logo-hero{
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 30px var(--neon);
+    border: 2px solid var(--neon);
+}
+
+.logo-footer{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 0.5rem;
+}
+
+/* ---------- Contadores de ocupación ---------- */
+.tarjeta-contador{
+    background: var(--fondo-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: 1rem;
+    padding: 1rem;
+    text-align: center;
+    height: 100%;
+}
+
+.tarjeta-contador .icono{
+    font-size: 1.8rem;
+    color: var(--neon-claro);
+}
+
+.tarjeta-contador .cantidad{
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--texto);
+    text-shadow: 0 0 12px var(--neon);
+}
+
+.tarjeta-contador .etiqueta{
+    color: var(--texto-suave);
+    font-size: 0.85rem;
+}
+
+/* ---------- Hero ---------- */
+.hero{
+    text-align: center;
+}
+
+.hero .slogan{
+    color: var(--texto-suave);
+}
+
+/* ---------- Modal ---------- */
+.modal-content{
+    background: var(--fondo-tarjeta);
+    border: 1px solid var(--borde);
+    color: var(--texto);
+}
+
+.modal-header{
+    border-bottom: 1px solid var(--borde);
+}
+
+.modal-footer{
+    border-top: 1px solid var(--borde);
+}
+
+.modal .form-check-input:checked{
+    background-color: var(--neon);
+    border-color: var(--neon);
+}

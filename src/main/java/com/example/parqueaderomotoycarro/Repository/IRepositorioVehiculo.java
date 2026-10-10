@@ -8,4 +8,6 @@ import com.example.parqueaderomotoycarro.Model.ModelVehiculo;
 @Repository
 public interface IRepositorioVehiculo extends JpaRepository <ModelVehiculo, Long>{
 
+    long countByTipoVehiculo(String tipoVehiculo);
+
 }

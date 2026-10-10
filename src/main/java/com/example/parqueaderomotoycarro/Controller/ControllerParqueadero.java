@@ -3,27 +3,42 @@ package com.example.parqueaderomotoycarro.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-
-import com.example.parqueaderomotoycarro.Model.ModelVehiculo;
-import com.example.parqueaderomotoycarro.Service.IServiceParqueadero;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
-
-
-
+import com.example.parqueaderomotoycarro.Model.ModelTicket;
+import com.example.parqueaderomotoycarro.Model.ModelVehiculo;
+import com.example.parqueaderomotoycarro.Service.IServiceParqueadero;
+import com.example.parqueaderomotoycarro.Service.ServicePdf;
 
 @Controller
 public class ControllerParqueadero {
 
-    @Autowired 
+    @Autowired
     private IServiceParqueadero serviciosParqueadero;
+
+    @Autowired
+    private ServicePdf servicePdf;
+
+    @Autowired
+    private TemplateEngine templateEngine;
+
+    private void agregarContadores(Model model) {
+        model.addAttribute("contadores", serviciosParqueadero.traerContadores());
+        model.addAttribute("servicio", serviciosParqueadero);
+    }
 
     //Mostrar la pagina principal
     @GetMapping("/")
@@ -31,6 +46,7 @@ public class ControllerParqueadero {
         boolean desapareceForm = true;
         model.addAttribute("vehiculo", new ModelVehiculo());
         model.addAttribute("desapareceForm", desapareceForm);
+        agregarContadores(model);
         return "index";
     }
     @PostMapping("/ingresar")
@@ -56,6 +72,7 @@ public class ControllerParqueadero {
         model.addAttribute("resultado", resultado);
         model.addAttribute("lista", serviciosParqueadero.traerVehiculos());
         model.addAttribute("desapareceForm", desapareceForm);
+        agregarContadores(model);
         return "index";
     }
     
@@ -63,10 +80,12 @@ public class ControllerParqueadero {
     public String servicio(@ModelAttribute("vehiculo") ModelVehiculo vehiculo,@PathVariable Long id, Model model) {
         ModelVehiculo vehi = serviciosParqueadero.encontrarVehiculo(id);
         String resultado = "";
-        if (vehi.getTipoVehiculo().equals("Moto")) {
-            resultado = serviciosParqueadero.servicios(id, vehiculo.getCasco());
-        }else if(vehi.getTipoVehiculo().equals("Carro")){
-            resultado = serviciosParqueadero.servicios(id, vehiculo.getLavado());
+        if (vehi != null) {
+            if (vehi.getTipoVehiculo().equals("Moto")) {
+                resultado = serviciosParqueadero.servicios(id, vehiculo.getCasco());
+            }else if(vehi.getTipoVehiculo().equals("Carro")){
+                resultado = serviciosParqueadero.servicios(id, vehiculo.getLavado());
+            }
         }
         model.addAttribute("resultadoServicio", resultado);
         model.addAttribute("lista", serviciosParqueadero.traerVehiculos());
@@ -77,6 +96,8 @@ public class ControllerParqueadero {
     @GetMapping("/lista")
     public String traerLista(Model model) {
         model.addAttribute("lista", serviciosParqueadero.traerVehiculos());
+        model.addAttribute("vehiculo", new ModelVehiculo());
+        agregarContadores(model);
         return "listavehiculos";
     }
     @PostMapping("/eliminar/{id}")
@@ -84,6 +105,7 @@ public class ControllerParqueadero {
         String resultado = serviciosParqueadero.eliminarVehiculo(id);
         model.addAttribute("resultado", resultado);
         model.addAttribute("lista", serviciosParqueadero.traerVehiculos());
+        agregarContadores(model);
         return "listavehiculos";
     }
     @GetMapping("/modificar/{id}")
@@ -103,6 +125,8 @@ public class ControllerParqueadero {
         String resultado = serviciosParqueadero.modificarVehiculo(id, vehiculo);
         if (!(resultado.equals("Se ha modificado con éxito!"))) {
             model.addAttribute("resultado", resultado);
+            model.addAttribute("lista", serviciosParqueadero.traerVehiculos());
+            agregarContadores(model);
             return "listavehiculos";
         }else{
         String placaAModificar = vehi.getPlaca();
@@ -120,13 +144,16 @@ public class ControllerParqueadero {
     public String servicioModificando(@PathVariable Long id, @ModelAttribute("vehiculo") ModelVehiculo vehiculo, Model model) {
         ModelVehiculo vehi = serviciosParqueadero.encontrarVehiculo(id);
         String resultado = "";
-        if (vehi.getTipoVehiculo().equals("Moto")) {
-            resultado = serviciosParqueadero.servicios(id, vehiculo.getCasco());
-        }else if(vehi.getTipoVehiculo().equals("Carro")){
-            resultado = serviciosParqueadero.servicios(id, vehiculo.getLavado());
+        if (vehi != null) {
+            if (vehi.getTipoVehiculo().equals("Moto")) {
+                resultado = serviciosParqueadero.servicios(id, vehiculo.getCasco());
+            }else if(vehi.getTipoVehiculo().equals("Carro")){
+                resultado = serviciosParqueadero.servicios(id, vehiculo.getLavado());
+            }
         }
         model.addAttribute("resultadoServicio", resultado);
         model.addAttribute("lista", serviciosParqueadero.traerVehiculos());
+        agregarContadores(model);
         return "listavehiculos";
     }
     @GetMapping("/cobrar/{id}")
@@ -140,13 +167,39 @@ public class ControllerParqueadero {
         return "cobrar";
     }
     @PostMapping("/cobrando/{id}")
-    public String cobrando(@PathVariable Long id, @ModelAttribute("vehiculo")ModelVehiculo vehiculo, Model model) {
-        String resultCobro = serviciosParqueadero.cobro(id, vehiculo.getPago());
-        model.addAttribute("resultCobro", resultCobro);
-        return "listavehiculos";
+    public String cobrando(@PathVariable Long id, @ModelAttribute("vehiculo") ModelVehiculo vehiculo, RedirectAttributes redirectAttributes) {
+        ModelTicket ticket = serviciosParqueadero.cobrar(id, vehiculo.getPago());
+        if (ticket == null) {
+            redirectAttributes.addFlashAttribute("resultCobro", "Saldo insuficiente, el vehículo sigue en el parqueadero");
+            return "redirect:/lista";
+        }
+        redirectAttributes.addFlashAttribute("ticket", ticket);
+        return "redirect:/ticket";
     }
-    
-    
-    
-    
+
+    //Genera y devuelve el PDF de la factura tras el cobro
+    @GetMapping("/ticket")
+    public ResponseEntity<byte[]> descargarTicket(@ModelAttribute("ticket") ModelTicket ticket) {
+        if (ticket == null) {
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                    .header(HttpHeaders.LOCATION, "/lista")
+                    .build();
+        }
+        Context contexto = new Context();
+        contexto.setVariable("ticket", ticket);
+        String html = templateEngine.process("ticket-pdf", contexto);
+        byte[] pdf = servicePdf.generarPdf(html, obtenerBaseUrlImagenes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("inline", "factura-" + ticket.placa() + ".pdf");
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+    }
+
+    private String obtenerBaseUrlImagenes() {
+        try {
+            return new ClassPathResource("static/img").getFile().toURI().toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

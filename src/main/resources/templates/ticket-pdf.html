@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Factura ParkNeon</title>
+    <style>
+        body { font-family: Helvetica, Arial, sans-serif; color: #212529; margin: 0; padding: 14px; font-size: 11px; }
+        .encabezado { width: 100%; border-bottom: 3px solid #2823bc; padding-bottom: 8px; margin-bottom: 12px; }
+        .logo { float: left; width: 90px; }
+        .marca { float: left; margin-left: 10px; }
+        .marca h1 { margin: 0; font-size: 22px; color: #2823bc; }
+        .marca p { margin: 2px 0 0 0; color: #6c757d; }
+        .titulo-factura { float: right; text-align: right; }
+        .titulo-factura h2 { margin: 0; font-size: 16px; color: #2823bc; }
+        .clear { clear: both; }
+        .datos { width: 100%; margin-bottom: 10px; }
+        .datos td { vertical-align: top; }
+        table.conceptos { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        table.conceptos th { background-color: #2823bc; color: #ffffff; text-align: left; padding: 5px; }
+        table.conceptos td { border: 1px solid #dee2e6; padding: 5px; }
+        table.conceptos tr.total td { font-weight: bold; background-color: #eef2ff; }
+        .pie { margin-top: 14px; border-top: 1px solid #dee2e6; padding-top: 6px; color: #6c757d; font-size: 9px; text-align: center; }
+        .servicio-si { color: #198754; font-weight: bold; }
+        .servicio-no { color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="encabezado">
+        <img class="logo" src="iconpark.jpg" alt="Logo ParkNeon"/>
+        <div class="marca">
+            <h1>ParkNeon</h1>
+            <p>Parqueadero de motos y carros</p>
+            <p>Cra 0 # 0-00 · Tel: 300 000 0000</p>
+        </div>
+        <div class="titulo-factura">
+            <h2>FACTURA DE SERVICIO</h2>
+            <p th:text="|Fecha: ${#temporals.format(ticket.fechaEmision, 'dd/MM/yyyy HH:mm')}|">Fecha</p>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <table class="datos">
+        <tr>
+            <td><strong>Placa:</strong> <span th:text="${ticket.placa}">ABC123</span></td>
+            <td><strong>Vehículo:</strong> <span th:text="${ticket.tipoVehiculo}">Moto</span></td>
+        </tr>
+        <tr>
+            <td><strong>Hora de entrada:</strong> <span th:text="${ticket.horaEntrada}">08:00</span></td>
+            <td><strong>Horas en parqueadero:</strong> <span th:text="${ticket.horasEnParqueadero}">3</span></td>
+        </tr>
+    </table>
+
+    <table class="conceptos">
+        <thead>
+            <tr>
+                <th>Concepto</th>
+                <th>Detalle</th>
+                <th style="text-align: right;">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Tiempo (hora fracción)</td>
+                <td th:text="|${ticket.horasEnParqueadero} hora(s)|">3 horas</td>
+                <td style="text-align: right;" th:text="|$ ${#numbers.formatDecimal(ticket.valorHoras, 1, 0, 'COMMA')}|">$ 10.500</td>
+            </tr>
+            <tr>
+                <td>Servicios</td>
+                <td>
+                    <span th:if="${ticket.tipoVehiculo == 'Moto'}">
+                        Casco: <span class="servicio-si" th:if="${ticket.casco}">Sí</span><span class="servicio-no" th:if="!${ticket.casco}">No</span>
+                    </span>
+                    <span th:if="${ticket.tipoVehiculo == 'Carro'}">
+                        Lavado: <span class="servicio-si" th:if="${ticket.lavado}">Sí</span><span class="servicio-no" th:if="!${ticket.lavado}">No</span>
+                    </span>
+                </td>
+                <td style="text-align: right;" th:text="|$ ${#numbers.formatDecimal(ticket.valorServicios, 1, 0, 'COMMA')}|">$ 2.000</td>
+            </tr>
+            <tr class="total">
+                <td>TOTAL A PAGAR</td>
+                <td></td>
+                <td style="text-align: right;" th:text="|$ ${#numbers.formatDecimal(ticket.total, 1, 0, 'COMMA')}|">$ 12.500</td>
+            </tr>
+            <tr>
+                <td>Valor abonado</td>
+                <td></td>
+                <td style="text-align: right;" th:text="|$ ${#numbers.formatDecimal(ticket.pago, 1, 0, 'COMMA')}|">$ 15.000</td>
+            </tr>
+            <tr>
+                <td>Valor devuelto</td>
+                <td></td>
+                <td style="text-align: right;" th:text="|$ ${#numbers.formatDecimal(ticket.devuelta, 1, 0, 'COMMA')}|">$ 2.500</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p style="text-align: center; font-weight: bold; color: #2823bc;">¡Gracias por su visita, vuelva pronto!</p>
+
+    <div class="pie">
+        ParkNeon - Enterprise · Horario: Lunes a Sábado 6:00 a.m. - 8:00 p.m.<br/>
+        Esta factura se genera como comprobante de pago del servicio de parqueadero.
+    </div>
+</body>
+</html>

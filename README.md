@@ -1,112 +1,118 @@
-# Parqueadero de Moto y Carros
+# Parqueadero de Motos y Carros
 
-Este proyecto es una API para la gestión de servicios de un parqueadero de vehículos, con funcionalidades como CRUD/ABML y servicios adicionales según el tipo de vehículo. La aplicación permite calcular el costo por tiempo de permanencia y servicios adicionales como lavado de vehículos.
+Aplicación web (Spring Boot + Thymeleaf) para la gestión de un parqueadero de motos y
+carros: registro, listado, modificación, cobro por tiempo de permanencia y servicios
+adicionales (lavado y casco).
 
 ## Características
-- **Gestión de parqueadero:** CRUD para vehículos (motos y carros).
-- **Base de datos MySQL**: Configuración de base de datos en `application.properties`.
 
-## Tecnologías Utilizadas
+- **Registro de vehículos** con validación de placa (formato colombiano), pico y placa
+  y aforo máximo (5 carros / 10 motos).
+- **Listado, modificación y eliminación** de vehículos.
+- **Servicios adicionales**: casco para motos, lavado para carros.
+- **Cobro automático** calculado por horas de permanencia + servicios.
+- Interfaz Thymeleaf + Bootstrap (sin JavaScript propio).
 
-- **Backend:** Java (Spring Boot)
-- **Base de datos:** MySQL
-- **Dependencias:**
-  - `mysql-connector-j`
+## Tecnologías
 
-## Instalación
+- **Java 26** (`JAVA_HOME = C:\Program Files\Java\jdk-26.0.2`)
+- **Spring Boot 4.1.0** (Spring Framework 7, Hibernate 7, Jakarta EE 11)
+- **Maven 3.9.6** (wrapper `mvnw.cmd`)
+- **PostgreSQL** en la nube (Supabase) con driver `org.postgresql:postgresql`
+- **Lombok 1.18.46**, **Thymeleaf**
+
+## Requisitos
+
+- JDK 26 instalado y `JAVA_HOME` apuntando a él (necesario para `mvnw`).
+- Una cuenta de Supabase con el password de la base de datos Postgres.
+
+## Configuración
+
 1. Clona el repositorio:
 
    ```bash
    git clone https://github.com/arenasantiago/parqueaderovehiculos.git
+   ```
 
+2. Copia el archivo de variables de entorno:
+
+   ```bash
+   copy .env.example .env
+   ```
+
+3. Llena `.env` con tus credenciales (NO versionado):
+
+   ```properties
+   DB_HOST=db.XXXX.supabase.co
+   DB_PORT=5432
+   DB_NAME=postgres
+   DB_USER=postgres
+   DB_PASSWORD=tu_password_de_la_bd
+
+   SUPABASE_URL=https://XXXX.supabase.co
+   SUPABASE_PUBLISHABLE_KEY=sb_publishable_XXXX
+   SUPABASE_SECRET_KEY=sb_secret_XXXX
+   SUPABASE_JWKS_URL=https://XXXX.supabase.co/auth/v1/.well-known/jwks.json
+   ```
+
+   > `DB_PASSWORD` es el password de la **base de datos** Postgres, no la
+   > `SUPABASE_SECRET_KEY`. Se obtiene en Supabase →
+   > *Project Settings → Database → Connection string → Reveal password*.
+
+## Ejecución
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Abre http://localhost:8080
+
+El esquema se auto-genera con `spring.jpa.hibernate.ddl-auto=update` (Hibernate crea la
+tabla `model_vehiculo` en Supabase al primer arranque).
+
+## Rutas (vistas MVC)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/` | Página principal (registro de vehículo) |
+| POST | `/ingresar` | Registra un nuevo vehículo |
+| POST | `/servicio/{id}` | Agrega servicio (casco/lavado) |
+| GET | `/lista` | Lista de vehículos en el parqueadero |
+| POST | `/eliminar/{id}` | Elimina un vehículo |
+| GET | `/modificar/{id}` | Formulario de modificación |
+| POST | `/modificar/modificando/{id}` | Guarda la modificación |
+| POST | `/servicioModificado/{id}` | Servicio desde el listado |
+| GET | `/cobrar/{id}` | Formulario de cobro (muestra monto) |
+| POST | `/cobrando/{id}` | Procesa el cobro y retira el vehículo |
 
 ## Base de datos
-La base de datos MySQL almacena la información de cada vehículo, incluyendo:
-- **ID** (único para cada vehículo).
-- **Tipo de vehículo** (moto o carro).
-- **Placa** (única para identificar el vehículo).
-- **Hora de ingreso** (para calcular la tarifa).
-- **Servicios** (si el vehículo solicitó servicios adicionales como lavado).
- Base de datos: `parqueadero`
- Usuario: `root`
 
- ## Configuracion del application.properties
-  `spring.jpa.hibernate.ddl-auto=update`
-  `spring.datasource.url=jdbc:mysql://localhost:3306/parqueadero?seSSL=false&serverTimezone=UTC`
-  `spring.datasource.username=root`
-  `spring.datasource.password=`
-  `spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect`
-  ## Endpoints
+Tabla `model_vehiculo` (generada por Hibernate) con los campos:
 
-### 1. **POST /vehiculo**
-   - **Descripción**: Registra un vehículo en el parqueadero.
-   - **Cuerpo de la solicitud**:
-     ```json
-     {
-       "tipo": "moto",  // "moto" o "carro"
-       "placa": "ABC123", 
-       "servicios": ["lavado"],  // Servicios adicionales (opcional)
-       "horaIngreso": "2024-12-01T10:00:00"
-     }
-     ```
-   - **Respuesta**: Estado del registro del vehículo.
+- `id` — identificador único (secuencia).
+- `placa` — placa del vehículo (única).
+- `tipo_vehiculo` — `Moto` o `Carro`.
+- `hora_entrada` / `hora` — hora de ingreso (para calcular tarifa).
+- `casco` — booleano, servicio de casco (motos).
+- `lavado` — booleano, servicio de lavado (carros).
+- `pago` — valor abonado al cobrar.
 
-### 2. **GET /vehiculo/{id}**
-   - **Descripción**: Obtiene la información detallada de un vehículo por su ID (placa única).
-   - **Respuesta**:
-     ```json
-     {
-       "id": 1,
-       "tipo": "carro",
-       "placa": "ABC123",
-       "horaIngreso": "2024-12-01T10:00:00",
-       "servicios": ["lavado"],
-       "costo": 7000  // Costo calculado
-     }
-     ```
+## Cálculo de tarifas
 
-### 3. **PUT /vehiculo/{id}**
-   - **Descripción**: Actualiza la información de un vehículo (por ejemplo, si el vehículo pide servicios adicionales).
-   - **Cuerpo de la solicitud**:
-     ```json
-     {
-       "tipo": "carro",
-       "placa": "ABC123",
-       "servicios": ["lavado", "llantas"]
-     }
-     ```
-   - **Respuesta**: Estado de la actualización.
+### Motos
+- **Costo básico**: $3.500 por hora.
+- **Costo adicional**: $2.000 si trae casco.
 
-### 4. **DELETE /vehiculo/{id}**
-   - **Descripción**: Elimina un vehículo del parqueadero (por ejemplo, cuando se retira el vehículo).
-   - **Respuesta**: Confirmación de eliminación.
+### Carros
+- **Costo básico**: $7.000 por hora.
+- **Costo adicional**: $30.000 por lavado.
 
-### 5. **GET /vehiculo/{id}/costo**
-   - **Descripción**: Calcula el costo del parqueadero para un vehículo en función del tiempo de permanencia y servicios adicionales solicitados.
-   - **Respuesta**:
-     ```json
-     {
-       "costo": 7000  // Costo total por hora y servicios adicionales.
-     }
-     ```
-## Cálculo de Tarifas
-### Motos:
-- **Costo básico**: $3,500 por hora.
-- **Costo adicional**: $2,000 si trae casco.
+### Ejemplos
+- **Moto** 3 horas con casco: 3 × $3.500 + $2.000 = **$12.500**.
+- **Carro** 4 horas con lavado: 4 × $7.000 + $30.000 = **$58.000**.
 
-### Carros:
-- **Costo básico**: $7,000 por hora.
-- **Costo adicional**: $30,000 por lavado.
+## Estado del proyecto
 
-### Ejemplo de cálculo de tarifas:
-- **Motos**: Si una moto permanece estacionada durante 3 horas y trae casco:
-  - 3 horas x $3,500 = $10,500
-  - Casco adicional: $2,000
-  - **Total**: $12,500
-
-- **Carros**: Si un carro permanece estacionado durante 4 horas y solicita lavado:
-  - 4 horas x $7,000 = $28,000
-  - Lavado adicional: $30,000
-  - **Total**: $58,000
- ## Ejecución
-   `mvn spring-boot:run`
+> **Checkpoint** — versión funcional "sin IA", construida a mano, recién migrada de
+> MySQL local a Supabase (PostgreSQL) y de Spring Boot 3.2.5 a 4.1.0. A partir de este
+> punto se iniciará la **refactorización** del código.
